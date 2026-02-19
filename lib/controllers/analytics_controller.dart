@@ -5,7 +5,7 @@ import '../models/metric_card.dart';
 import '../models/traffic_source.dart';
 
 class AnalyticsController extends GetxController {
-  // ── Tab & Range ──────────────────────────────
+  // Tab & Range
   final selectedTab       = 'Overview'.obs;
   final selectedRange     = '7 days'.obs;
   final selectedGenderTab = 'Gender'.obs;
@@ -14,7 +14,7 @@ class AnalyticsController extends GetxController {
   final List<String> ranges     = ['7 days', '28 days', '60 days', '365 days', 'Custom'];
   final List<String> genderTabs = ['Gender', 'Age', 'Locations'];
 
-  // ── Overview 7-day Metrics ────────────────────
+  // Overview 7-day Metrics
   final metricsOverview7 = <MetricCard>[
     const MetricCard(label: 'Post views',    value: '118',   change: '-20 (-14.5%)', isPositive: false),
     const MetricCard(label: 'Profile views', value: '8',     change: '+4 (+100%)',   isPositive: true),
@@ -24,7 +24,7 @@ class AnalyticsController extends GetxController {
     const MetricCard(label: 'Est.rewards',   value: '\$0.00',change: '+\$0.00',      isPositive: true),
   ].obs;
 
-  // ── Overview 365-day Metrics ──────────────────
+  // Overview 365-day Metrics
   final metricsOverview365 = <MetricCard>[
     const MetricCard(label: 'Post views',    value: '1.2M'),
     const MetricCard(label: 'Profile views', value: '18K'),
@@ -34,7 +34,7 @@ class AnalyticsController extends GetxController {
     const MetricCard(label: 'Est.rewards',   value: '-'),
   ].obs;
 
-  // ── Viewers Metrics ───────────────────────────
+  //  Viewers Metrics
   final metricsViewers = <MetricCard>[
     const MetricCard(label: 'Total viewers', value: '937K'),
     const MetricCard(label: 'New viewers',   value: '18K'),
@@ -51,7 +51,7 @@ class AnalyticsController extends GetxController {
     ...List.generate(30, (index) => 0.05 + (math.Random().nextDouble() * 0.02)),
   ].obs;
 
-  // ── Traffic Sources 7d
+  //  Traffic Sources 7d
   final trafficSources7d = <TrafficSource>[
     const TrafficSource(label: 'Search',          percentage: 69.8),
     const TrafficSource(label: 'Personal Profile',percentage: 19.4),
@@ -60,21 +60,21 @@ class AnalyticsController extends GetxController {
     const TrafficSource(label: 'Sound',           percentage: 0.0),
   ].obs;
 
-  // ── Traffic Sources 365d
+  // Traffic Sources 365d
   final trafficSources365d = <TrafficSource>[
     const TrafficSource(label: 'For You',          percentage: 69.8),
     const TrafficSource(label: 'Personal Profile', percentage: 2.8),
     const TrafficSource(label: 'Search',           percentage: 2.3),
   ].obs;
 
-  // ── Gender Data ───────────────────────────────
+  // Gender Data
   final genderData = <TrafficSource>[
     const TrafficSource(label: 'Male',   percentage: 66),
     const TrafficSource(label: 'Female', percentage: 25),
     const TrafficSource(label: 'Other',  percentage: 9),
   ].obs;
 
-  // ── Search Queries (শুধু 7 days এ দেখাবে) ────
+  //  Search Queries
   final searchQueries = <TrafficSource>[
     const TrafficSource(label: 'Yeat audio',                      percentage: 69.8),
     const TrafficSource(label: 'yeat songs',                      percentage: 19.4),
@@ -83,7 +83,7 @@ class AnalyticsController extends GetxController {
     const TrafficSource(label: 'Slowflowoutthraway',              percentage: 0.0),
   ].obs;
 
-  // ── Computed Helpers ──────────────────────────
+  // Computed Helpers
   bool get is7Days   => selectedRange.value == '7 days';
   bool get isViewers => selectedTab.value == 'Viewers';
 
@@ -107,7 +107,7 @@ class AnalyticsController extends GetxController {
   String get graphEndDate   => is7Days ? 'Feb 15'        : 'Feb 15, 2026';
   String get dateRange      => is7Days ? 'Feb 9 – Feb 15': 'Feb 16, 2025 – Feb 15, 2026';
 
-  // ── Actions ───────────────────────────────────
+  // Actions
   void selectTab(String tab)       => selectedTab.value = tab;
   void selectRange(String range)   => selectedRange.value = range;
   void selectGenderTab(String tab) => selectedGenderTab.value = tab;

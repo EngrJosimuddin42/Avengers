@@ -37,9 +37,7 @@ class AnalyticsScreen extends GetView<AnalyticsController> {
   }
 }
 
-// ─────────────────────────────────────────────
 // Overview Content
-// ─────────────────────────────────────────────
 class _OverviewContent extends GetView<AnalyticsController> {
   const _OverviewContent();
 
@@ -98,13 +96,10 @@ class _OverviewContent extends GetView<AnalyticsController> {
   }
 }
 
-// ─────────────────────────────────────────────
 // Viewers Content
-// ─────────────────────────────────────────────
 class _ViewersContent extends GetView<AnalyticsController> {
   const _ViewersContent();
 
-  // Donut color — screenshot অনুযায়ী
   Color _donutColor(String label) {
     switch (label) {
       case 'Male':   return const Color(0xFF90CAF9);
@@ -121,7 +116,8 @@ class _ViewersContent extends GetView<AnalyticsController> {
       child: Obx(() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Key metrics ──
+
+          // Key metrics
           SectionTitle(
             title: AppConstants.sectionKeyMetrics,
             subtitle: controller.dateRange,
@@ -157,7 +153,7 @@ class _ViewersContent extends GetView<AnalyticsController> {
           ),
           SizedBox(height: 20.h),
 
-          // ── Graph ──
+          // Graph
           _GraphCard(
             points: controller.graphPoints365d.toList(),
             startDate: 'Feb 16, 2025',
@@ -166,13 +162,14 @@ class _ViewersContent extends GetView<AnalyticsController> {
           SizedBox(height: 20.h),
 
 
-          // ── Traffic Source
+          //  Traffic Source
           AppCard(
             child: Padding(
               padding: EdgeInsets.all(16.r),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+
                   // Title row
                   Row(
                     children: [
@@ -198,7 +195,7 @@ class _ViewersContent extends GetView<AnalyticsController> {
                     ),
                   ),
                   SizedBox(height: 8.h),
-                  // Legend rows — divider সহ
+                  // Legend rows
                   ...controller.genderData.asMap().entries.map((entry) {
                     final i = entry.key;
                     final g = entry.value;
@@ -247,9 +244,8 @@ class _ViewersContent extends GetView<AnalyticsController> {
   }
 }
 
-// ─────────────────────────────────────────────
+
 // Gender Tab Row
-// ─────────────────────────────────────────────
 class _GenderTabRow extends GetView<AnalyticsController> {
   const _GenderTabRow();
 
@@ -267,7 +263,6 @@ class _GenderTabRow extends GetView<AnalyticsController> {
             padding: EdgeInsets.symmetric(
                 horizontal: 16.w, vertical: 7.h),
             decoration: BoxDecoration(
-              // selected → darker card, unselected → surface
               color: isSelected ? AppColors.card1 : AppColors.surface1,
               borderRadius: BorderRadius.circular(8.r),
             ),
@@ -290,9 +285,8 @@ class _GenderTabRow extends GetView<AnalyticsController> {
   }
 }
 
-// ─────────────────────────────────────────────
+
 // Donut Painter (Semicircle)
-// ─────────────────────────────────────────────
 class _DonutPainter extends CustomPainter {
   final List<dynamic> data;
   _DonutPainter({required this.data});
@@ -337,9 +331,8 @@ class _DonutPainter extends CustomPainter {
   bool shouldRepaint(_DonutPainter old) => false;
 }
 
-// ─────────────────────────────────────────────
+
 // Metrics Grid
-// ─────────────────────────────────────────────
 class _MetricsGrid extends StatelessWidget {
   final List<MetricCard> metrics;
   const _MetricsGrid({required this.metrics});
@@ -364,9 +357,8 @@ class _MetricsGrid extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────
+
 // Metric Tile
-// ─────────────────────────────────────────────
 class _MetricTile extends StatelessWidget {
   final MetricCard metric;
   final bool isHighlighted;
@@ -407,9 +399,8 @@ class _MetricTile extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────
+
 // Change Row
-// ─────────────────────────────────────────────
 class _ChangeRow extends StatelessWidget {
   final String change;
   final bool? isPositive;
@@ -452,9 +443,8 @@ class _ChangeRow extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────
+
 // Graph Card
-// ─────────────────────────────────────────────
 class _GraphCard extends StatelessWidget {
   final List<double> points;
   final String startDate;
@@ -496,9 +486,8 @@ class _GraphCard extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────
+
 // App Bar
-// ─────────────────────────────────────────────
 class _AppBar extends StatelessWidget {
   const _AppBar();
 
@@ -524,9 +513,7 @@ class _AppBar extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────
 // Tab Bar
-// ─────────────────────────────────────────────
 class _TabBar extends GetView<AnalyticsController> {
   const _TabBar();
 
@@ -565,9 +552,8 @@ class _TabBar extends GetView<AnalyticsController> {
   }
 }
 
-// ─────────────────────────────────────────────
+
 // Range Selector
-// ─────────────────────────────────────────────
 class _RangeSelector extends GetView<AnalyticsController> {
   const _RangeSelector();
 
