@@ -1,5 +1,4 @@
 import 'dart:math' as math;
-
 import 'package:get/get.dart';
 import '../models/metric_card.dart';
 import '../models/traffic_source.dart';
@@ -34,33 +33,32 @@ class AnalyticsController extends GetxController {
     const MetricCard(label: 'Est.rewards',   value: '-'),
   ].obs;
 
-  //  Viewers Metrics
+  // Viewers Metrics
   final metricsViewers = <MetricCard>[
     const MetricCard(label: 'Total viewers', value: '937K'),
     const MetricCard(label: 'New viewers',   value: '18K'),
   ].obs;
 
-  //  Graph Points
-  final graphPoints7d = <double>[0.33, 0.2, 0.5, 0.75, 0.9, 0.6, 0.55].obs;
+  // Graph Points
+  final graphPoints7d   = <double>[0.33, 0.2, 0.5, 0.75, 0.9, 0.6, 0.55].obs;
   final graphPoints365d = <double>[
-    ...List.generate(20, (index) => 0.05 + (math.Random().nextDouble() * 0.05)),
+    ...List.generate(20, (_) => 0.05 + (math.Random().nextDouble() * 0.05)),
     0.95,
     0.1,
-    ...List.generate(30, (index) => 0.1 + (math.Random().nextDouble() * 0.1)),
-    ...List.generate(20, (index) => 0.2 + (math.Random().nextDouble() * 0.3)),
-    ...List.generate(30, (index) => 0.05 + (math.Random().nextDouble() * 0.02)),
+    ...List.generate(30, (_) => 0.1  + (math.Random().nextDouble() * 0.1)),
+    ...List.generate(20, (_) => 0.2  + (math.Random().nextDouble() * 0.3)),
+    ...List.generate(30, (_) => 0.05 + (math.Random().nextDouble() * 0.02)),
   ].obs;
 
-  //  Traffic Sources 7d
+  // Traffic Sources
   final trafficSources7d = <TrafficSource>[
-    const TrafficSource(label: 'Search',          percentage: 69.8),
-    const TrafficSource(label: 'Personal Profile',percentage: 19.4),
-    const TrafficSource(label: 'Following',       percentage: 2.3),
-    const TrafficSource(label: 'For You',         percentage: 2.3),
-    const TrafficSource(label: 'Sound',           percentage: 0.0),
+    const TrafficSource(label: 'Search',           percentage: 69.8),
+    const TrafficSource(label: 'Personal Profile', percentage: 19.4),
+    const TrafficSource(label: 'Following',        percentage: 2.3),
+    const TrafficSource(label: 'For You',          percentage: 2.3),
+    const TrafficSource(label: 'Sound',            percentage: 0.0),
   ].obs;
 
-  // Traffic Sources 365d
   final trafficSources365d = <TrafficSource>[
     const TrafficSource(label: 'For You',          percentage: 69.8),
     const TrafficSource(label: 'Personal Profile', percentage: 2.8),
@@ -74,18 +72,18 @@ class AnalyticsController extends GetxController {
     const TrafficSource(label: 'Other',  percentage: 9),
   ].obs;
 
-  //  Search Queries
+  // Search Queries
   final searchQueries = <TrafficSource>[
-    const TrafficSource(label: 'Yeat audio',                      percentage: 69.8),
-    const TrafficSource(label: 'yeat songs',                      percentage: 19.4),
-    const TrafficSource(label: 'yeat no avail slowed',            percentage: 2.3),
-    const TrafficSource(label: 'yeat out the way slowed reverb',  percentage: 2.3),
-    const TrafficSource(label: 'Slowflowoutthraway',              percentage: 0.0),
+    const TrafficSource(label: 'Yeat audio',                     percentage: 69.8),
+    const TrafficSource(label: 'yeat songs',                     percentage: 19.4),
+    const TrafficSource(label: 'yeat no avail slowed',           percentage: 2.3),
+    const TrafficSource(label: 'yeat out the way slowed reverb', percentage: 2.3),
+    const TrafficSource(label: 'Slowflowoutthraway',             percentage: 0.0),
   ].obs;
 
   // Computed Helpers
   bool get is7Days   => selectedRange.value == '7 days';
-  bool get isViewers => selectedTab.value == 'Viewers';
+  bool get isViewers => selectedTab.value   == 'Viewers';
 
   List<MetricCard> get currentMetrics {
     if (isViewers) return metricsViewers;
@@ -103,12 +101,117 @@ class AnalyticsController extends GetxController {
     return trafficSources365d;
   }
 
-  String get graphStartDate => is7Days ? 'Feb 9'         : 'Feb 16, 2025';
-  String get graphEndDate   => is7Days ? 'Feb 15'        : 'Feb 15, 2026';
-  String get dateRange      => is7Days ? 'Feb 9 – Feb 15': 'Feb 16, 2025 – Feb 15, 2026';
+  // Editable Dates
+  final startDate7d   = 'Feb 9'.obs;
+  final endDate7d     = 'Feb 15'.obs;
+  final startDate365d = 'Feb 16, 2025'.obs;
+  final endDate365d   = 'Feb 15, 2026'.obs;
 
-  // Actions
+  String get graphStartDate => is7Days ? startDate7d.value   : startDate365d.value;
+  String get graphEndDate   => is7Days ? endDate7d.value     : endDate365d.value;
+  String get dateRange      => '$graphStartDate – $graphEndDate';
+
+  void updateStartDate(String v) {
+    if (is7Days) startDate7d.value  = v;
+    else         startDate365d.value = v;
+  }
+
+  void updateEndDate(String v) {
+    if (is7Days) endDate7d.value   = v;
+    else         endDate365d.value = v;
+  }
+
+  //  Actions
   void selectTab(String tab)       => selectedTab.value = tab;
   void selectRange(String range)   => selectedRange.value = range;
   void selectGenderTab(String tab) => selectedGenderTab.value = tab;
+
+  // Edit Gender Percentage
+  void updateGenderPercentage(int index, double newPct) {
+    genderData[index] = TrafficSource(
+      label: genderData[index].label,
+      percentage: newPct.clamp(0, 100),
+    );
+    genderData.refresh();
+  }
+
+  //  Edit Metric Value
+  void updateMetricValue(String listTarget, int index, String newValue) {
+    switch (listTarget) {
+      case 'overview7':
+        final old = metricsOverview7[index];
+        metricsOverview7[index] = MetricCard(
+          label: old.label, value: newValue,
+          change: old.change, isPositive: old.isPositive,
+        );
+        metricsOverview7.refresh();
+        break;
+      case 'overview365':
+        final old = metricsOverview365[index];
+        metricsOverview365[index] = MetricCard(
+          label: old.label, value: newValue,
+          change: old.change, isPositive: old.isPositive,
+        );
+        metricsOverview365.refresh();
+        break;
+      case 'viewers':
+        final old = metricsViewers[index];
+        metricsViewers[index] = MetricCard(
+          label: old.label, value: newValue,
+          change: old.change, isPositive: old.isPositive,
+        );
+        metricsViewers.refresh();
+        break;
+    }
+  }
+
+  void updateMetricChange(String listTarget, int index, String newChange) {
+    switch (listTarget) {
+      case 'overview7':
+        final old = metricsOverview7[index];
+        metricsOverview7[index] = MetricCard(
+          label: old.label, value: old.value,
+          change: newChange, isPositive: old.isPositive,
+        );
+        metricsOverview7.refresh();
+        break;
+      case 'overview365':
+        final old = metricsOverview365[index];
+        metricsOverview365[index] = MetricCard(
+          label: old.label, value: old.value,
+          change: newChange, isPositive: old.isPositive,
+        );
+        metricsOverview365.refresh();
+        break;
+      case 'viewers':
+        final old = metricsViewers[index];
+        metricsViewers[index] = MetricCard(
+          label: old.label, value: old.value,
+          change: newChange, isPositive: old.isPositive,
+        );
+        metricsViewers.refresh();
+        break;
+    }
+  }
+
+  // current list target string
+  String get currentListTarget {
+    if (isViewers) return 'viewers';
+    if (is7Days)   return 'overview7';
+    return 'overview365';
+  }
+
+  //  Edit Traffic Source
+  void updateTrafficSource(bool is7d, int index, String newLabel, double newPct) {
+    final list = is7d ? trafficSources7d : trafficSources365d;
+    list[index] = TrafficSource(label: newLabel, percentage: newPct);
+    if (is7d) trafficSources7d.refresh();
+    else       trafficSources365d.refresh();
+  }
+
+  // Edit Search Query
+  void updateSearchQuery(int index, String newLabel, double newPct) {
+    searchQueries[index] = TrafficSource(label: newLabel, percentage: newPct);
+    searchQueries.refresh();
+  }
 }

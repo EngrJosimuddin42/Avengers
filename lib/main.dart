@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import ' views/screens/dashboard_selector_screen.dart';
+import 'controllers/performance_controller.dart';
 import 'themes/app_colors.dart';
-import ' views/screens/analytics_screen.dart';
 import 'controllers/analytics_controller.dart';
 
 void main() {
@@ -22,17 +22,18 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'Analytics',
+          title: 'Creator Dashboard',
           theme: ThemeData.dark().copyWith(
             scaffoldBackgroundColor: AppColors.bg,
           ),
           initialBinding: BindingsBuilder(() {
             Get.put(AnalyticsController());
+            Get.put(PerformanceController());
           }),
-          home: child,
+          home: const DashboardSelectorScreen(),
         );
       },
-      child: const AnalyticsScreen(),
+      child: const DashboardSelectorScreen(),
     );
   }
 }
