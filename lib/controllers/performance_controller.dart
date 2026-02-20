@@ -2,16 +2,17 @@ import 'package:get/get.dart';
 import '../models/performance_models.dart';
 
 class PerformanceController extends GetxController {
-  // Tab State
-  final selectedRangeTab     = 1.obs;
-  final selectedCriteriaTab  = 0.obs;
-  final currentMonth         = 'Feb 2026'.obs;
-  final showDailyChart       = false.obs;
+  final isOverview          = true.obs;
+  final selectedRangeTab    = 0.obs;
+  final selectedCriteriaTab = 0.obs;
+  final currentMonth        = 'Feb 2026'.obs;
+  final showDailyChart      = false.obs;
 
-  final rangeTabs = ['By month', '365 days', 'Custom'];
+  final rangeTabs    = ['By month', '365 days', 'Custom'];
   final criteriaTabs = ['Well-crafted', 'Engaging', 'Specialized'];
 
-  // ─── Static Data
+  bool get isMonthly => selectedRangeTab.value == 0;
+
   final rewardsInfo = const RewardsInfo(
     rewards: '\$0.00',
     rpm: '--',
@@ -42,6 +43,9 @@ class PerformanceController extends GetxController {
     ChartBar(label: '16', value: 0.0, maxValue: 3),
   ];
 
+  List<ChartBar> get currentBars =>
+      selectedRangeTab.value == 1 ? dailyBars : monthlyBars;
+
   final List<RewardCriteria> criteria = const [
     RewardCriteria(
       title: 'Well-crafted',
@@ -58,36 +62,26 @@ class PerformanceController extends GetxController {
   ];
 
   final List<VideoThumbnail> videos = const [
-    VideoThumbnail(
-      title: 'TikTok is now encouraging creator',
-      creator: 'Seth',
-      imagePath: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=200',
-      avatarPath: '',
-    ),
-    VideoThumbnail(
-      title: 'TikTok is now encouraging creator',
-      creator: 'Seth',
-      imagePath: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=200',
-      avatarPath: '',
-    ),
-    VideoThumbnail(
-      title: 'TikTok is now encouraging creator',
-      creator: 'Seth',
-      imagePath: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200',
-      avatarPath: '',
-    ),
+    VideoThumbnail(title: '', creator: '', imagePath: 'assets/images/video_thumb_1.png', avatarPath: ''),
+    VideoThumbnail(title: '', creator: '', imagePath: 'assets/images/video_thumb_2.png', avatarPath: ''),
+    VideoThumbnail(title: '', creator: '', imagePath: 'assets/images/video_thumb_3.png', avatarPath: ''),
   ];
 
-  //  Actions
+  // Actions
+  void goToChartScreen() {
+    selectedRangeTab.value = 0;
+    isOverview.value = false;
+  }
+
+  // Back from chart → overview
+  void goToOverview() {
+    isOverview.value = true;
+  }
+
   void selectRangeTab(int i)    => selectedRangeTab.value = i;
   void selectCriteriaTab(int i) => selectedCriteriaTab.value = i;
   void toggleChartMode()        => showDailyChart.toggle();
 
-  void previousMonth() {
-    currentMonth.value = 'Jan 2026';
-  }
-
-  void nextMonth() {
-    currentMonth.value = 'Mar 2026';
-  }
+  void previousMonth() => currentMonth.value = 'Jan 2026';
+  void nextMonth()     => currentMonth.value = 'Mar 2026';
 }

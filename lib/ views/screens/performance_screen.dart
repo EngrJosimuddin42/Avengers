@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../controllers/performance_controller.dart';
 import '../../helpers/bar_chart_painter.dart';
 import '../../themes/app_colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class PerformanceScreen extends GetView<PerformanceController> {
   const PerformanceScreen({super.key});
@@ -13,31 +14,29 @@ class PerformanceScreen extends GetView<PerformanceController> {
     return Scaffold(
       backgroundColor: AppColors.bg,
       body: SafeArea(
-        child: Column(
+        child: Obx(() => Column(
           children: [
-            _PerformanceAppBar(),
+            const _PerformanceAppBar(),
+            if (!controller.isOverview.value) const _RangeTabs(),
             Expanded(
-              child: Obx(() {
-                if (controller.selectedRangeTab.value == 0) {
-                  return const _OverviewScreen();
-                }
-                return const _ChartScreen();
-              }),
+              child: controller.isOverview.value
+                  ? const _OverviewContent()
+                  : const _ChartContent(),
             ),
           ],
-        ),
+        )),
       ),
     );
   }
 }
 
-// Shared AppBar
+//  AppBar
 class _PerformanceAppBar extends GetView<PerformanceController> {
   const _PerformanceAppBar();
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Obx(() => Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
       child: Stack(
         alignment: Alignment.center,
@@ -45,7 +44,9 @@ class _PerformanceAppBar extends GetView<PerformanceController> {
           Align(
             alignment: Alignment.centerLeft,
             child: GestureDetector(
-              onTap: () => Get.back(),
+              onTap: controller.isOverview.value
+                  ? () => Get.back()
+                  : controller.goToOverview,
               child: Icon(Icons.arrow_back_ios_new,
                   color: AppColors.textPrimary, size: 18.r),
             ),
@@ -53,89 +54,75 @@ class _PerformanceAppBar extends GetView<PerformanceController> {
           Column(
             children: [
               Text('Performance',
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     color: AppColors.textPrimary,
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w500,
                   )),
               Text('Last update: Feb 15',
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     color: AppColors.textSecondary,
-                    fontSize: 11.sp,
+                    fontSize: 12.sp,
                   )),
             ],
           ),
+        ],
+      ),
+    ));
+  }
+}
+
+// Overview
+class _OverviewContent extends GetView<PerformanceController> {
+  const _OverviewContent();
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const _RewardsCard(),
+          SizedBox(height: 16.h),
+          const _HighQualityVideosSection(),
+          SizedBox(height: 16.h),
+          const _RewardCriteriaSection(),
+          SizedBox(height: 16.h),
+          _ViewMoreButton(onTap: controller.goToChartScreen),
+          SizedBox(height: 24.h),
         ],
       ),
     );
   }
 }
 
-
-class _OverviewScreen extends GetView<PerformanceController> {
-  const _OverviewScreen();
+//  Chart Content
+class _ChartContent extends GetView<PerformanceController> {
+  const _ChartContent();
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _RangeTabs(),
-        Expanded(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _RewardsCard(),
-                SizedBox(height: 16.h),
-                _HighQualityVideosSection(),
-                SizedBox(height: 16.h),
-                _RewardCriteriaSection(),
-                SizedBox(height: 16.h),
-                _ViewMoreButton(),
-                SizedBox(height: 24.h),
-              ],
-            ),
-          ),
-        ),
-      ],
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const _CreatorRewardsCard(),
+          SizedBox(height: 16.h),
+          const _RewardsCard(),
+          SizedBox(height: 16.h),
+          const _HighQualityVideosSection(),
+          SizedBox(height: 24.h),
+        ],
+      ),
     );
   }
 }
 
-
-class _ChartScreen extends GetView<PerformanceController> {
-  const _ChartScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _RangeTabs(),
-        Expanded(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _CreatorRewardsCard(),
-                SizedBox(height: 16.h),
-                _RewardsCard(),
-                SizedBox(height: 16.h),
-                _HighQualityVideosSection(),
-                SizedBox(height: 24.h),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-//  Range Tabs (By month / 365 days / Custom)
+// ─── Range Tabs ───────────────────────────────────────────────────────────────
 class _RangeTabs extends GetView<PerformanceController> {
   const _RangeTabs();
 
@@ -145,10 +132,10 @@ class _RangeTabs extends GetView<PerformanceController> {
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
       child: Row(
         children: controller.rangeTabs.asMap().entries.map((e) {
-          final i = e.key;
-          final label = e.value;
+          final i          = e.key;
+          final label      = e.value;
           final isSelected = controller.selectedRangeTab.value == i;
-          final isCustom = label == 'Custom';
+          final isCustom   = label == 'Custom';
 
           return GestureDetector(
             onTap: () => controller.selectRangeTab(i),
@@ -156,25 +143,18 @@ class _RangeTabs extends GetView<PerformanceController> {
               margin: EdgeInsets.only(right: 8.w),
               padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 7.h),
               decoration: BoxDecoration(
-                color: isSelected
-                    ? AppColors.textPrimary
-                    : const Color(0xFF2A2A2A),
+                color: isSelected ? AppColors.textPrimary : const Color(0xFF2A2A2A),
                 borderRadius: BorderRadius.circular(20.r),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    label,
-                    style: TextStyle(
-                      color: isSelected
-                          ? AppColors.bg
-                          : AppColors.textSecondary,
-                      fontSize: 13.sp,
-                      fontWeight:
-                      isSelected ? FontWeight.w600 : FontWeight.w400,
-                    ),
-                  ),
+                  Text(label,
+                      style: TextStyle(
+                        color: isSelected ? AppColors.bg : AppColors.textSecondary,
+                        fontSize: 13.sp,
+                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                      )),
                   if (isCustom) ...[
                     SizedBox(width: 4.w),
                     Icon(Icons.keyboard_arrow_down,
@@ -190,7 +170,148 @@ class _RangeTabs extends GetView<PerformanceController> {
   }
 }
 
-// Rewards Card
+// ─── Creator Rewards Card ─────────────────────────────────────────────────────
+class _CreatorRewardsCard extends GetView<PerformanceController> {
+  const _CreatorRewardsCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() => _SectionCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Row(
+            children: [
+              Text('Creator Rewards',
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w600,
+                  )),
+              SizedBox(width: 6.w),
+              Icon(Icons.info_outline, size: 14.r, color: AppColors.textSecondary),
+              const Spacer(),
+              GestureDetector(
+                onTap: controller.previousMonth,
+                child: Icon(Icons.chevron_left,
+                    color: AppColors.textSecondary, size: 20.r),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.w),
+                child: Text(controller.currentMonth.value,
+                    style: TextStyle(color: AppColors.textPrimary, fontSize: 13.sp)),
+              ),
+              GestureDetector(
+                onTap: controller.nextMonth,
+                child: Icon(Icons.chevron_right,
+                    color: AppColors.textSecondary, size: 20.r),
+              ),
+            ],
+          ),
+          SizedBox(height: 8.h),
+
+          // Amount
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text('\$0.00',
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 28.sp,
+                    fontWeight: FontWeight.w700,
+                  )),
+              if (controller.selectedRangeTab.value == 1) ...[
+                SizedBox(width: 8.w),
+                Icon(Icons.cloud_sync_outlined,
+                    color: const Color(0xFF64B5F6), size: 16.r),
+                SizedBox(width: 4.w),
+                Text('\$0.00 (Feb 15)',
+                    style: TextStyle(
+                        color: const Color(0xFF64B5F6), fontSize: 11.sp)),
+              ],
+            ],
+          ),
+          SizedBox(height: 4.h),
+          Text('Feb 16, 2025 - Feb 15, 2026',
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 11.sp)),
+          SizedBox(height: 12.h),
+
+          // ── Reward Entries — border সহ ────────────────────────────────────
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.10),
+                width: 1,
+              ),
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+            child: Column(
+              children: controller.rewardEntries.asMap().entries.map((e) {
+                final i     = e.key;
+                final entry = e.value;
+                final isLast = i == controller.rewardEntries.length - 1;
+
+                return Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 12.w, vertical: 11.h),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 7.r,
+                            height: 7.r,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF64B5F6),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          SizedBox(width: 10.w),
+                          Expanded(
+                            child: Text(
+                              entry.label,
+                              style: TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 12.sp),
+                            ),
+                          ),
+                          Text(
+                            entry.amount,
+                            style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 12.sp),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
+          SizedBox(height: 12.h),
+          // Bar chart
+          SizedBox(
+            height: 130.h,
+            child: CustomPaint(
+              painter: BarChartPainter(
+                bars: controller.currentBars,
+                barColor: const Color(0xFF607D8B),
+                gridColor: Colors.white.withValues(alpha: 0.1),
+                labelColor: const Color(0xFF757575),
+                maxGridValue: 3,
+              ),
+              size: Size.infinite,
+            ),
+          ),
+        ],
+      ),
+    ));
+  }
+}
+
+// ─── Rewards Card ─────────────────────────────────────────────────────────────
 class _RewardsCard extends GetView<PerformanceController> {
   const _RewardsCard();
 
@@ -204,14 +325,13 @@ class _RewardsCard extends GetView<PerformanceController> {
           Row(
             children: [
               Text('Rewards calculation',
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     color: AppColors.textPrimary,
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w500,
                   )),
               SizedBox(width: 6.w),
-              Icon(Icons.info_outline,
-                  size: 14.r, color: AppColors.textSecondary),
+              Icon(Icons.info_outline, size: 14.r, color: AppColors.textSecondary),
             ],
           ),
           SizedBox(height: 12.h),
@@ -233,10 +353,7 @@ class _RewardsCard extends GetView<PerformanceController> {
           ),
           SizedBox(height: 10.h),
           Text(r.note,
-              style: TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 11.sp,
-              )),
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 11.sp)),
         ],
       ),
     );
@@ -256,18 +373,18 @@ class _RewardMetric extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isQualifiedViews = label == 'Qualified views';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
-            style: TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 11.sp,
-            )),
+            style: TextStyle(color: AppColors.textPrimary, fontSize: 11.sp)),
         SizedBox(height: 2.h),
         Text(value,
             style: TextStyle(
-              color: AppColors.textPrimary,
+              color: isQualifiedViews
+                  ? AppColors.textSecondary
+                  : AppColors.textPrimary,
               fontSize: valueSmall ? 12.sp : 16.sp,
               fontWeight: FontWeight.w600,
             )),
@@ -276,204 +393,7 @@ class _RewardMetric extends StatelessWidget {
   }
 }
 
-// Creator Rewards Card
-class _CreatorRewardsCard extends GetView<PerformanceController> {
-  const _CreatorRewardsCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() => _SectionCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text('Creator Rewards',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w600,
-                  )),
-              SizedBox(width: 6.w),
-              Icon(Icons.info_outline,
-                  size: 14.r, color: AppColors.textSecondary),
-              const Spacer(),
-              GestureDetector(
-                onTap: controller.previousMonth,
-                child: Icon(Icons.chevron_left,
-                    color: AppColors.textSecondary, size: 20.r),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.w),
-                child: Text(controller.currentMonth.value,
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 13.sp,
-                    )),
-              ),
-              GestureDetector(
-                onTap: controller.nextMonth,
-                child: Icon(Icons.chevron_right,
-                    color: AppColors.textSecondary, size: 20.r),
-              ),
-            ],
-          ),
-          SizedBox(height: 8.h),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text('\$0.00',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 28.sp,
-                    fontWeight: FontWeight.w700,
-                  )),
-              if (controller.showDailyChart.value) ...[
-                SizedBox(width: 8.w),
-                Icon(Icons.cloud_sync_outlined,
-                    color: const Color(0xFF64B5F6), size: 16.r),
-                SizedBox(width: 4.w),
-                Text('\$0.00 (Feb 15)',
-                    style: TextStyle(
-                      color: const Color(0xFF64B5F6),
-                      fontSize: 11.sp,
-                    )),
-              ],
-            ],
-          ),
-          SizedBox(height: 4.h),
-          Text('Feb 16, 2025 - Feb 15, 2026',
-              style: TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 11.sp,
-              )),
-          SizedBox(height: 12.h),
-
-          // Reward entries
-          ...controller.rewardEntries.map((entry) => Padding(
-            padding: EdgeInsets.only(bottom: 8.h),
-            child: Row(
-              children: [
-                Container(
-                  width: 7.r,
-                  height: 7.r,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF64B5F6),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                SizedBox(width: 8.w),
-                Expanded(
-                  child: Text(entry.label,
-                      style: TextStyle(
-                        color: AppColors.textSecondary,
-                        fontSize: 12.sp,
-                      )),
-                ),
-                Text(entry.amount,
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 12.sp,
-                    )),
-              ],
-            ),
-          )),
-          SizedBox(height: 12.h),
-
-          // Chart toggle buttons (inside card)
-          _ChartToggleButtons(),
-          SizedBox(height: 12.h),
-
-          // Bar chart
-          SizedBox(
-            height: 130.h,
-            child: CustomPaint(
-              painter: BarChartPainter(
-                bars: controller.showDailyChart.value
-                    ? controller.dailyBars
-                    : controller.monthlyBars,
-                barColor: const Color(0xFF607D8B),
-                gridColor: Colors.white.withValues(alpha: 0.1),
-                labelColor: const Color(0xFF757575),
-                maxGridValue: 3,
-              ),
-              size: Size.infinite,
-            ),
-          ),
-        ],
-      ),
-    ));
-  }
-}
-
-//Chart Toggle Buttons (monthly vs daily)
-class _ChartToggleButtons extends GetView<PerformanceController> {
-  const _ChartToggleButtons();
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() => Row(
-      children: [
-        _ChartToggleChip(
-          label: 'Monthly',
-          selected: !controller.showDailyChart.value,
-          onTap: () {
-            if (controller.showDailyChart.value) controller.toggleChartMode();
-          },
-        ),
-        SizedBox(width: 8.w),
-        _ChartToggleChip(
-          label: 'Daily',
-          selected: controller.showDailyChart.value,
-          onTap: () {
-            if (!controller.showDailyChart.value) controller.toggleChartMode();
-          },
-        ),
-      ],
-    ));
-  }
-}
-
-class _ChartToggleChip extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _ChartToggleChip({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 5.h),
-        decoration: BoxDecoration(
-          color: selected ? const Color(0xFF3A3A3A) : Colors.transparent,
-          borderRadius: BorderRadius.circular(6.r),
-          border: Border.all(
-            color: selected
-                ? Colors.transparent
-                : Colors.white.withValues(alpha: 0.1),
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: selected ? AppColors.textPrimary : AppColors.textSecondary,
-            fontSize: 11.sp,
-            fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// Creating High-Quality Videos Section
+// ─── High Quality Videos ──────────────────────────────────────────────────────
 class _HighQualityVideosSection extends GetView<PerformanceController> {
   const _HighQualityVideosSection();
 
@@ -490,21 +410,15 @@ class _HighQualityVideosSection extends GetView<PerformanceController> {
             )),
         SizedBox(height: 4.h),
         Text('Best practices to get the additional reward.',
-            style: TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 12.sp,
-            )),
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 12.sp)),
         SizedBox(height: 12.h),
-
-        // Criteria tabs
         Obx(() => SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
             children: controller.criteriaTabs.asMap().entries.map((e) {
-              final i         = e.key;
-              final label     = e.value;
+              final i          = e.key;
+              final label      = e.value;
               final isSelected = controller.selectedCriteriaTab.value == i;
-
               return GestureDetector(
                 onTap: () => controller.selectCriteriaTab(i),
                 child: Container(
@@ -516,98 +430,38 @@ class _HighQualityVideosSection extends GetView<PerformanceController> {
                         : const Color(0xFF2A2A2A),
                     borderRadius: BorderRadius.circular(20.r),
                   ),
-                  child: Text(
-                    label,
-                    style: TextStyle(
-                      color: isSelected ? AppColors.bg : AppColors.textSecondary,
-                      fontSize: 12.sp,
-                      fontWeight:
-                      isSelected ? FontWeight.w600 : FontWeight.w400,
-                    ),
-                  ),
+                  child: Text(label,
+                      style: TextStyle(
+                        color: isSelected ? AppColors.bg : AppColors.textSecondary,
+                        fontSize: 12.sp,
+                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                      )),
                 ),
               );
             }).toList(),
           ),
         )),
         SizedBox(height: 12.h),
-
-        // Video thumbnails row
         SizedBox(
-          height: 140.h,
+          height: 160.h,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: controller.videos.length,
             itemBuilder: (_, i) {
               final v = controller.videos[i];
               return Container(
-                width: 100.w,
+                width: 120.w,
                 margin: EdgeInsets.only(right: 8.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8.r),
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            Image.network(
-                              v.imagePath,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Container(
-                                color: const Color(0xFF2A2A2A),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 0,
-                              left: 0,
-                              right: 0,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.bottomCenter,
-                                    end: Alignment.topCenter,
-                                    colors: [
-                                      Colors.black.withValues(alpha: 0.8),
-                                      Colors.transparent,
-                                    ],
-                                  ),
-                                ),
-                                padding: EdgeInsets.all(6.r),
-                                child: Text(v.title,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 9.sp,
-                                      fontWeight: FontWeight.w500,
-                                    )),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.r),
+                  child: Image.asset(
+                    v.imagePath,
+                    fit: BoxFit.fill,
+                    errorBuilder: (_, __, ___) => Container(
+                      color: const Color(0xFF2A2A2A),
+                      child: const Icon(Icons.broken_image, color: Colors.grey),
                     ),
-                    SizedBox(height: 4.h),
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 8.r,
-                          backgroundColor: const Color(0xFF607D8B),
-                          child: Text(v.creator[0],
-                              style: TextStyle(
-                                  fontSize: 7.sp, color: Colors.white)),
-                        ),
-                        SizedBox(width: 4.w),
-                        Text(v.creator,
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 10.sp,
-                            )),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
               );
             },
@@ -618,7 +472,7 @@ class _HighQualityVideosSection extends GetView<PerformanceController> {
   }
 }
 
-// Reward Criteria Section
+// ─── Reward Criteria ──────────────────────────────────────────────────────────
 class _RewardCriteriaSection extends GetView<PerformanceController> {
   const _RewardCriteriaSection();
 
@@ -676,9 +530,8 @@ class _RewardCriteriaSection extends GetView<PerformanceController> {
                               SizedBox(height: 3.h),
                               Text(c.description,
                                   style: TextStyle(
-                                    color: AppColors.textSecondary,
-                                    fontSize: 11.sp,
-                                  )),
+                                      color: AppColors.textSecondary,
+                                      fontSize: 11.sp)),
                             ],
                           ),
                         ),
@@ -695,36 +548,33 @@ class _RewardCriteriaSection extends GetView<PerformanceController> {
   }
 }
 
-// View More Button
+// ─── View More Button ─────────────────────────────────────────────────────────
 class _ViewMoreButton extends StatelessWidget {
-  const _ViewMoreButton();
+  final VoidCallback onTap;
+  const _ViewMoreButton({required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: onTap,
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF2A2A2A),
           foregroundColor: AppColors.textPrimary,
           padding: EdgeInsets.symmetric(vertical: 14.h),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.r),
-          ),
+              borderRadius: BorderRadius.circular(12.r)),
           elevation: 0,
         ),
         child: Text('View more',
-            style: TextStyle(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w500,
-            )),
+            style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500)),
       ),
     );
   }
 }
 
-// Shared Card Widget
+// ─── Shared Card ──────────────────────────────────────────────────────────────
 class _SectionCard extends StatelessWidget {
   final Widget child;
   const _SectionCard({required this.child});

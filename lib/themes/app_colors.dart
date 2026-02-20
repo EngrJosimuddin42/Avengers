@@ -13,7 +13,7 @@ class AppColors {
   static const divider       = Color(0xFF2A2A2A);
   static const textPrimary   = Colors.white;
   static const textPrimary1   = Color(0xFF8ECAFF);
-  static const textSecondary = Color(0xFFFFFFFF);
+  static const textSecondary = Color(0xFF707070);
   static const positive      = Color(0xFF8ECAFF);
   static const negative      = Colors.redAccent;
 }
