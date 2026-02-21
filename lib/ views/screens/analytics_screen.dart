@@ -50,7 +50,7 @@ class _OverviewContent extends GetView<AnalyticsController> {
       child: Obx(() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _TappableDateHeader(),
+          const _TappableDateHeader(),
           SizedBox(height: 12.h),
           _EditableMetricsGrid(
             metrics: controller.currentMetrics,
@@ -115,7 +115,7 @@ class _OverviewContent extends GetView<AnalyticsController> {
                         ),
                       ],
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ),
@@ -169,7 +169,7 @@ class _OverviewContent extends GetView<AnalyticsController> {
                           ),
                         ],
                       );
-                    }).toList(),
+                    }),
                   ],
                 ),
               ),
@@ -201,7 +201,7 @@ class _ViewersContent extends GetView<AnalyticsController> {
       child: Obx(() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _TappableDateHeader(),
+          const _TappableDateHeader(),
 
 
 
@@ -330,7 +330,7 @@ class _ViewersContent extends GetView<AnalyticsController> {
 
 // Key metrics
 class _TappableDateHeader extends GetView<AnalyticsController> {
-  const _TappableDateHeader({super.key});
+  const _TappableDateHeader();
 
   static Future<void> _showDateDialog(
       BuildContext context,
@@ -352,7 +352,7 @@ class _TappableDateHeader extends GetView<AnalyticsController> {
           autofocus: true,
           style: TextStyle(color: AppColors.textPrimary, fontSize: 14.sp),
           cursorColor: AppColors.accent,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             hintText: 'e.g. Feb 9',
             hintStyle: TextStyle(color: AppColors.textSecondary),
             enabledBorder: UnderlineInputBorder(
@@ -367,11 +367,11 @@ class _TappableDateHeader extends GetView<AnalyticsController> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
+            child: const Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, ctrl.text),
-            child: Text('Save', style: TextStyle(color: AppColors.accent)),
+            child:const Text('Save', style: TextStyle(color: AppColors.accent)),
           ),
         ],
       ),
@@ -561,11 +561,11 @@ class _InlineEditTextState extends State<_InlineEditText> {
             contentPadding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 4.h),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6.r),
-              borderSide: BorderSide(color: AppColors.accent, width: 1.2),
+              borderSide: const BorderSide(color: AppColors.accent, width: 1.2),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6.r),
-              borderSide: BorderSide(color: AppColors.accent, width: 1.5),
+              borderSide:const BorderSide(color: AppColors.accent, width: 1.5),
             ),
             filled: true,
             fillColor: AppColors.bg,
@@ -632,11 +632,11 @@ class _EditableChangeRowState extends State<_EditableChangeRow> {
             contentPadding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 3.h),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(4.r),
-              borderSide: BorderSide(color: AppColors.accent, width: 1),
+              borderSide: const BorderSide(color: AppColors.accent, width: 1),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(4.r),
-              borderSide: BorderSide(color: AppColors.accent, width: 1.2),
+              borderSide: const BorderSide(color: AppColors.accent, width: 1.2),
             ),
             filled: true,
             fillColor: AppColors.bg,
@@ -758,11 +758,11 @@ class _EditableProgressRowState extends State<EditableProgressRow> {
                     contentPadding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 3.h),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(4.r),
-                      borderSide: BorderSide(color: AppColors.accent),
+                      borderSide: const BorderSide(color: AppColors.accent),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(4.r),
-                      borderSide: BorderSide(color: AppColors.accent, width: 1.5),
+                      borderSide: const BorderSide(color: AppColors.accent, width: 1.5),
                     ),
                     filled: true,
                     fillColor: AppColors.bg,
@@ -795,7 +795,7 @@ class _EditableProgressRowState extends State<EditableProgressRow> {
               value: _currentPct / 100,
               minHeight: 4.h,
               backgroundColor: AppColors.surface,
-              valueColor: AlwaysStoppedAnimation<Color>(AppColors.accent),
+              valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accent),
             ),
           ),
         ],
@@ -856,11 +856,11 @@ class _InlineEditNumberState extends State<_InlineEditNumber> {
             contentPadding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 3.h),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(4.r),
-              borderSide: BorderSide(color: AppColors.accent),
+              borderSide: const BorderSide(color: AppColors.accent),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(4.r),
-              borderSide: BorderSide(color: AppColors.accent, width: 1.5),
+              borderSide: const BorderSide(color: AppColors.accent, width: 1.5),
             ),
             filled: true,
             fillColor: AppColors.bg,
@@ -915,7 +915,7 @@ class _DateGraphCard extends StatelessWidget {
           autofocus: true,
           style: TextStyle(color: AppColors.textPrimary, fontSize: 14.sp),
           cursorColor: AppColors.accent,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             hintText: 'e.g. Feb 9',
             hintStyle: TextStyle(color: AppColors.textSecondary),
             enabledBorder: UnderlineInputBorder(
@@ -930,11 +930,11 @@ class _DateGraphCard extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
+            child: const Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, ctrl.text),
-            child: Text('Save', style: TextStyle(color: AppColors.accent)),
+            child: const Text('Save', style: TextStyle(color: AppColors.accent)),
           ),
         ],
       ),

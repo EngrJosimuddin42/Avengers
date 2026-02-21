@@ -112,14 +112,21 @@ class AnalyticsController extends GetxController {
   String get dateRange      => '$graphStartDate – $graphEndDate';
 
   void updateStartDate(String v) {
-    if (is7Days) startDate7d.value  = v;
-    else         startDate365d.value = v;
+    if (is7Days) {
+      startDate7d.value = v;
+    } else {
+      startDate365d.value = v;
+    }
   }
 
   void updateEndDate(String v) {
-    if (is7Days) endDate7d.value   = v;
-    else         endDate365d.value = v;
+    if (is7Days) {
+      endDate7d.value = v;
+    } else {
+      endDate365d.value = v;
+    }
   }
+
 
   //  Actions
   void selectTab(String tab)       => selectedTab.value = tab;
@@ -202,11 +209,16 @@ class AnalyticsController extends GetxController {
   }
 
   //  Edit Traffic Source
+
   void updateTrafficSource(bool is7d, int index, String newLabel, double newPct) {
     final list = is7d ? trafficSources7d : trafficSources365d;
     list[index] = TrafficSource(label: newLabel, percentage: newPct);
-    if (is7d) trafficSources7d.refresh();
-    else       trafficSources365d.refresh();
+
+    if (is7d) {
+      trafficSources7d.refresh();
+    } else {
+      trafficSources365d.refresh();
+    }
   }
 
   // Edit Search Query
