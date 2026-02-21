@@ -58,7 +58,7 @@ class _OverviewContent extends GetView<AnalyticsController> {
           ),
           SizedBox(height: 12.h),
           _DateGraphCard(
-            points: controller.currentGraphPoints.toList(),
+            points: controller.graphPointsFromMetrics,
             startDate: controller.graphStartDate,
             endDate: controller.graphEndDate,
             onStartSave: controller.updateStartDate,
@@ -243,7 +243,7 @@ class _ViewersContent extends GetView<AnalyticsController> {
 
 
           _DateGraphCard(
-            points: controller.graphPoints365d.toList(),
+            points: controller.graphPointsFromMetrics,
             startDate: controller.startDate365d.value,
             endDate: controller.endDate365d.value,
             onStartSave: (v) => controller.startDate365d.value = v,

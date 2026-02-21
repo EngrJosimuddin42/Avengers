@@ -39,17 +39,6 @@ class AnalyticsController extends GetxController {
     const MetricCard(label: 'New viewers',   value: '18K'),
   ].obs;
 
-  // Graph Points
-  final graphPoints7d   = <double>[0.33, 0.2, 0.5, 0.75, 0.9, 0.6, 0.55].obs;
-  final graphPoints365d = <double>[
-    ...List.generate(20, (_) => 0.05 + (math.Random().nextDouble() * 0.05)),
-    0.95,
-    0.1,
-    ...List.generate(30, (_) => 0.1  + (math.Random().nextDouble() * 0.1)),
-    ...List.generate(20, (_) => 0.2  + (math.Random().nextDouble() * 0.3)),
-    ...List.generate(30, (_) => 0.05 + (math.Random().nextDouble() * 0.02)),
-  ].obs;
-
   // Traffic Sources
   final trafficSources7d = <TrafficSource>[
     const TrafficSource(label: 'Search',           percentage: 69.8),
@@ -81,6 +70,12 @@ class AnalyticsController extends GetxController {
     const TrafficSource(label: 'Slowflowoutthraway',             percentage: 0.0),
   ].obs;
 
+  // Editable Dates
+  final startDate7d   = 'Feb 9'.obs;
+  final endDate7d     = 'Feb 15'.obs;
+  final startDate365d = 'Feb 16, 2025'.obs;
+  final endDate365d   = 'Feb 15, 2026'.obs;
+
   // Computed Helpers
   bool get is7Days   => selectedRange.value == '7 days';
   bool get isViewers => selectedTab.value   == 'Viewers';
@@ -91,25 +86,42 @@ class AnalyticsController extends GetxController {
     return metricsOverview365;
   }
 
-  List<double> get currentGraphPoints {
-    if (is7Days) return graphPoints7d;
-    return graphPoints365d;
-  }
-
   List<TrafficSource> get currentTrafficSources {
     if (is7Days) return trafficSources7d;
     return trafficSources365d;
   }
 
-  // Editable Dates
-  final startDate7d   = 'Feb 9'.obs;
-  final endDate7d     = 'Feb 15'.obs;
-  final startDate365d = 'Feb 16, 2025'.obs;
-  final endDate365d   = 'Feb 15, 2026'.obs;
-
   String get graphStartDate => is7Days ? startDate7d.value   : startDate365d.value;
   String get graphEndDate   => is7Days ? endDate7d.value     : endDate365d.value;
   String get dateRange      => '$graphStartDate – $graphEndDate';
+
+
+  List<double> get graphPointsFromMetrics {
+    final metrics = currentMetrics;
+    if (metrics.isEmpty) return [0.0, 0.3, 0.6, 1.0];
+    final values = metrics.map((m) {
+      String valStr = m.value;
+      bool isNegative = valStr.startsWith('-');
+      valStr = valStr.replaceAll('-', '');
+      valStr = valStr.replaceAll(r'$', '');
+      double multiplier = 1.0;
+      valStr = valStr.toUpperCase();
+      if (valStr.endsWith('K')) {
+        multiplier = 1000;
+        valStr = valStr.substring(0, valStr.length - 1);
+      } else if (valStr.endsWith('M')) {
+        multiplier = 1000000;
+        valStr = valStr.substring(0, valStr.length - 1);
+      }
+      double val = double.tryParse(valStr) ?? 0.0;
+      val *= multiplier;
+      return val;
+    }).toList();
+
+    final maxVal = values.isEmpty ? 1.0 : values.reduce(math.max);
+    if (maxVal == 0) return List.filled(metrics.length, 0.5);
+    return values.map((v) => v / maxVal).toList();
+  }
 
   void updateStartDate(String v) {
     if (is7Days) {
@@ -126,8 +138,6 @@ class AnalyticsController extends GetxController {
       endDate365d.value = v;
     }
   }
-
-
   //  Actions
   void selectTab(String tab)       => selectedTab.value = tab;
   void selectRange(String range)   => selectedRange.value = range;
@@ -141,7 +151,6 @@ class AnalyticsController extends GetxController {
     );
     genderData.refresh();
   }
-
   //  Edit Metric Value
   void updateMetricValue(String listTarget, int index, String newValue) {
     switch (listTarget) {
@@ -209,7 +218,6 @@ class AnalyticsController extends GetxController {
   }
 
   //  Edit Traffic Source
-
   void updateTrafficSource(bool is7d, int index, String newLabel, double newPct) {
     final list = is7d ? trafficSources7d : trafficSources365d;
     list[index] = TrafficSource(label: newLabel, percentage: newPct);
