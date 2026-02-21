@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'package:get/get.dart';
 import '../models/metric_card.dart';
 import '../models/traffic_source.dart';
@@ -99,29 +98,34 @@ class AnalyticsController extends GetxController {
   List<double> get graphPointsFromMetrics {
     final metrics = currentMetrics;
     if (metrics.isEmpty) return [0.0, 0.3, 0.6, 1.0];
+
     final values = metrics.map((m) {
-      String valStr = m.value;
-      bool isNegative = valStr.startsWith('-');
-      valStr = valStr.replaceAll('-', '');
-      valStr = valStr.replaceAll(r'$', '');
+      String valStr = m.value
+          .replaceAll('-', '')
+          .replaceAll(r'$', '')
+          .trim();
+
       double multiplier = 1.0;
-      valStr = valStr.toUpperCase();
-      if (valStr.endsWith('K')) {
+      final upper = valStr.toUpperCase();
+
+      if (upper.endsWith('K')) {
         multiplier = 1000;
         valStr = valStr.substring(0, valStr.length - 1);
-      } else if (valStr.endsWith('M')) {
+      } else if (upper.endsWith('M')) {
         multiplier = 1000000;
         valStr = valStr.substring(0, valStr.length - 1);
       }
-      double val = double.tryParse(valStr) ?? 0.0;
-      val *= multiplier;
-      return val;
+
+      final val = double.tryParse(valStr) ?? 0.0;
+      return val * multiplier;
     }).toList();
 
-    final maxVal = values.isEmpty ? 1.0 : values.reduce(math.max);
-    if (maxVal == 0) return List.filled(metrics.length, 0.5);
+    final maxVal = values.reduce((a, b) => a > b ? a : b);
+    if (maxVal <= 0) return List.filled(metrics.length, 0.5);
+
     return values.map((v) => v / maxVal).toList();
   }
+
 
   void updateStartDate(String v) {
     if (is7Days) {
