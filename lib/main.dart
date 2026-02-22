@@ -1,7 +1,7 @@
+import 'package:analytics_app/%20views/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import ' views/screens/dashboard_selector_screen.dart';
 import 'controllers/performance_controller.dart';
 import 'themes/app_colors.dart';
 import 'controllers/analytics_controller.dart';
@@ -30,10 +30,9 @@ class MyApp extends StatelessWidget {
             Get.put(AnalyticsController());
             Get.put(PerformanceController());
           }),
-          home: const DashboardSelectorScreen(),
+          home: const SplashScreen(),
         );
       },
-      child: const DashboardSelectorScreen(),
     );
   }
 }
