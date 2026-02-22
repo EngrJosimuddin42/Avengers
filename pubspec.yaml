@@ -13,6 +13,7 @@ dependencies:
   get: ^4.6.6
   flutter_screenutil: ^5.9.0
   google_fonts: ^6.2.1
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:
@@ -23,6 +24,4 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/video_thumb_1.png
-    - assets/images/video_thumb_2.png
-    - assets/images/video_thumb_3.png
+    - assets/images/
