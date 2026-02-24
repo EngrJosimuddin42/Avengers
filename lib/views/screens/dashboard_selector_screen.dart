@@ -1,10 +1,10 @@
+import 'package:analytics_app/views/screens/performance/performance_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../themes/app_colors.dart';
 import '../base/dashboard_option_card.dart';
 import 'analytics/analytics_screen.dart';
-import 'performance_screen.dart';
 
 class DashboardSelectorScreen extends StatelessWidget {
   const DashboardSelectorScreen({super.key});
