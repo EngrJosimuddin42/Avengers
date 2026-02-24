@@ -25,3 +25,10 @@ flutter:
 
   assets:
     - assets/images/
+
+  fonts:
+    - family: TikTokSans
+      fonts:
+        - asset: assets/fonts/TikTokSans-Regular.ttf
+        - asset: assets/fonts/TikTokSans-Bold.ttf
+          weight: 700

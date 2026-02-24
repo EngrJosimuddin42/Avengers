@@ -6,6 +6,8 @@ class LinePainter extends CustomPainter {
 
   LinePainter({required this.points});
 
+  static const String _fontFamily = 'TikTokSans';
+
   @override
   void paint(Canvas canvas, Size size) {
     if (points.isEmpty) return;
@@ -15,19 +17,18 @@ class LinePainter extends CustomPainter {
     const rightPad = 28.0;
     final drawH   = size.height - topPad - botPad;
     final drawW   = size.width - rightPad;
-    final step    = drawW / (points.length - 1);
+    final step = points.length > 1 ? drawW / (points.length - 1) : drawW;
 
     Offset pointAt(int i) => Offset(
       i * step,
-      topPad + drawH * (1 - points[i]),
+      topPad + drawH * (1 - points[i].clamp(0.0, 1.0)),
     );
 
-    // Grid Lines (12, 24, 36)
+    // Grid Lines
     final gridPaint = Paint()
       ..color = Colors.white.withValues(alpha: 0.12)
       ..strokeWidth = 1;
 
-// Solid line paint for the top-most line
     final solidPaint = Paint()
       ..color = Colors.white.withValues(alpha: 0.12)
       ..strokeWidth = 1;
@@ -44,7 +45,7 @@ class LinePainter extends CustomPainter {
       }
     }
 
-    // Fill (gradient)
+    // Gradient Fill
     final fillPath = Path();
     fillPath.moveTo(pointAt(0).dx, size.height - botPad);
     fillPath.lineTo(pointAt(0).dx, pointAt(0).dy);
@@ -61,20 +62,19 @@ class LinePainter extends CustomPainter {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          AppColors.accent.withValues(alpha:0.45),
+          AppColors.accent.withValues(alpha: 0.45),
           AppColors.accent.withValues(alpha: 0.0),
         ],
       ).createShader(Rect.fromLTWH(0, topPad, drawW, drawH));
 
     canvas.drawPath(fillPath, fillPaint);
 
-    // Straight Lines
+    //Main Line
     final linePaint = Paint()
       ..color = AppColors.accent
       ..strokeWidth = points.length > 50 ? 1.0 : 2.5
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
-
 
     final linePath = Path();
     linePath.moveTo(pointAt(0).dx, pointAt(0).dy);
@@ -83,34 +83,37 @@ class LinePainter extends CustomPainter {
     }
     canvas.drawPath(linePath, linePaint);
 
-    //  Dots
-    final dotFill = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.fill;
-
-    final dotBorder = Paint()
-      ..color = AppColors.accent
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
-
+    //  Dots (Only for small data sets)
     if (points.length < 10) {
+      final dotFill = Paint()..color = Colors.white..style = PaintingStyle.fill;
+      final dotBorder = Paint()
+        ..color = AppColors.accent
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5;
+
       for (int i = 0; i < points.length; i++) {
         final p = pointAt(i);
-        canvas.drawCircle(p, 3, dotFill);
-        canvas.drawCircle(p, 3, dotBorder);
+        canvas.drawCircle(p, 3.5, dotFill);
+        canvas.drawCircle(p, 3.5, dotBorder);
       }
     }
 
-    //  Y-axis labels
-    final tp = TextPainter(textDirection: TextDirection.ltr);
+    // Y-axis Labels
     for (final entry in yLabels.entries) {
+      if (entry.key.isEmpty) continue;
+
       final y = topPad + drawH * entry.value;
-      tp.text = TextSpan(
-        text: entry.key,
-        style: TextStyle(
-          color: Colors.white.withValues(alpha: 0.4),
-          fontSize: 9,
+      final tp = TextPainter(
+        text: TextSpan(
+          text: entry.key,
+          style: TextStyle(
+            fontFamily: _fontFamily,
+            color: Colors.white.withValues(alpha: 0.4),
+            fontSize: 9,
+            fontWeight: FontWeight.w400,
+          ),
         ),
+        textDirection: TextDirection.ltr,
       );
       tp.layout();
       tp.paint(canvas, Offset(size.width - tp.width, y - tp.height / 2));
@@ -118,25 +121,16 @@ class LinePainter extends CustomPainter {
   }
 
   // Dotted line helper
-  void _drawDottedLine(
-      Canvas canvas, Offset start, Offset end, Paint paint) {
-    const dashWidth  = 1.5;
-    const dashSpace  = 2.0;
-    final dx = end.dx - start.dx;
-    final dy = end.dy - start.dy;
-    final len = (dx * dx + dy * dy);
-    if (len == 0) return;
-
+  void _drawDottedLine(Canvas canvas, Offset start, Offset end, Paint paint) {
+    const dashWidth = 2.0;
+    const dashSpace = 3.0;
     double distance = 0;
     final total = end.dx - start.dx;
+
     while (distance < total) {
       final x1 = start.dx + distance;
       final x2 = (x1 + dashWidth).clamp(start.dx, end.dx);
-      canvas.drawLine(
-        Offset(x1, start.dy),
-        Offset(x2, start.dy),
-        paint,
-      );
+      canvas.drawLine(Offset(x1, start.dy), Offset(x2, start.dy), paint);
       distance += dashWidth + dashSpace;
     }
   }

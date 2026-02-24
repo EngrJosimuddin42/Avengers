@@ -23,6 +23,9 @@ class BarChartPainter extends CustomPainter {
   static const double _topPadding      = 8.0;
   static const double _labelFontSize   = 10.0;
 
+  // Font constant
+  static const String _fontFamily = 'TikTokSans';
+
   @override
   void paint(Canvas canvas, Size size) {
     final double chartWidth  = size.width - _rightLabelWidth;
@@ -40,6 +43,8 @@ class BarChartPainter extends CustomPainter {
     for (int step = 0; step <= maxGridValue.toInt(); step++) {
       final double y = _topPadding + chartHeight * (1 - step / maxGridValue);
       canvas.drawLine(Offset(0, y), Offset(chartWidth, y), gridPaint);
+
+      // Grid Labels (0, 1, 2, 3)
       _drawText(canvas, '$step',
           Offset(chartWidth + 4, y - _labelFontSize / 2),
           _labelFontSize, labelColor);
@@ -47,6 +52,8 @@ class BarChartPainter extends CustomPainter {
   }
 
   void _drawBars(Canvas canvas, Size size, double chartWidth, double chartHeight) {
+    if (bars.isEmpty) return;
+
     final double barWidth   = chartWidth / bars.length;
     final double barPadding = barWidth * 0.25;
 
@@ -75,20 +82,28 @@ class BarChartPainter extends CustomPainter {
         );
       }
 
+      // Bar Bottom Labels (Dates/Days)
       _drawText(canvas, bar.label,
-          Offset(x + barPadding, size.height - _labelFontSize - 2),
+          Offset(x + (barWidth / 2) - (bar.label.length * 3), size.height - _labelFontSize - 2),
           _labelFontSize, labelColor);
     }
   }
 
   void _drawText(Canvas canvas, String text, Offset offset,
       double fontSize, Color color) {
-    (TextPainter(
+    final textPainter = TextPainter(
       text: TextSpan(
-          text: text, style: TextStyle(color: color, fontSize: fontSize)),
+          text: text,
+          style: TextStyle(
+            color: color,
+            fontSize: fontSize,
+            fontFamily: _fontFamily,
+            fontWeight: FontWeight.w400,
+          )),
       textDirection: TextDirection.ltr,
-    )..layout())
-        .paint(canvas, offset);
+    );
+    textPainter.layout();
+    textPainter.paint(canvas, offset);
   }
 
   // Returns the bar index at the given dx, or null.
@@ -96,9 +111,9 @@ class BarChartPainter extends CustomPainter {
     if (bars.isEmpty) return null;
     final double chartWidth = totalWidth - _rightLabelWidth;
     final double barAreaW   = chartWidth / bars.length;
-    for (int i = 0; i < bars.length; i++) {
-      if (dx >= i * barAreaW && dx < (i + 1) * barAreaW) return i;
-    }
+    final int index = (dx / barAreaW).floor();
+
+    if (index >= 0 && index < bars.length) return index;
     return null;
   }
 

@@ -1,10 +1,11 @@
-import 'package:analytics_app/%20views/screens/splash_screen.dart';
+import 'package:analytics_app/themes/dark_theme.dart';
+import 'package:analytics_app/views/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'controllers/performance_controller.dart';
-import 'themes/app_colors.dart';
 import 'controllers/analytics_controller.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -23,9 +24,7 @@ class MyApp extends StatelessWidget {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Creator Dashboard',
-          theme: ThemeData.dark().copyWith(
-            scaffoldBackgroundColor: AppColors.bg,
-          ),
+          theme: darkTheme(),
           initialBinding: BindingsBuilder(() {
             Get.put(AnalyticsController());
             Get.put(PerformanceController());

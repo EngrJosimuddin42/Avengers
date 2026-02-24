@@ -42,15 +42,15 @@ class AnalyticsController extends GetxController {
   final trafficSources7d = <TrafficSource>[
     const TrafficSource(label: 'Search',           percentage: 69.8),
     const TrafficSource(label: 'Personal Profile', percentage: 19.4),
-    const TrafficSource(label: 'Following',        percentage: 2.3),
-    const TrafficSource(label: 'For You',          percentage: 2.3),
+    const TrafficSource(label: 'Following',        percentage: 8.3),
+    const TrafficSource(label: 'For You',          percentage: 12.3),
     const TrafficSource(label: 'Sound',            percentage: 0.0),
   ].obs;
 
   final trafficSources365d = <TrafficSource>[
     const TrafficSource(label: 'For You',          percentage: 69.8),
-    const TrafficSource(label: 'Personal Profile', percentage: 2.8),
-    const TrafficSource(label: 'Search',           percentage: 2.3),
+    const TrafficSource(label: 'Personal Profile', percentage: 18.8),
+    const TrafficSource(label: 'Search',           percentage: 22.3),
   ].obs;
 
   // Gender Data
@@ -64,8 +64,8 @@ class AnalyticsController extends GetxController {
   final searchQueries = <TrafficSource>[
     const TrafficSource(label: 'Yeat audio',                     percentage: 69.8),
     const TrafficSource(label: 'yeat songs',                     percentage: 19.4),
-    const TrafficSource(label: 'yeat no avail slowed',           percentage: 2.3),
-    const TrafficSource(label: 'yeat out the way slowed reverb', percentage: 2.3),
+    const TrafficSource(label: 'yeat no avail slowed',           percentage: 8.3),
+    const TrafficSource(label: 'yeat out the way slowed reverb', percentage: 12.3),
     const TrafficSource(label: 'Slowflowoutthraway',             percentage: 0.0),
   ].obs;
 
